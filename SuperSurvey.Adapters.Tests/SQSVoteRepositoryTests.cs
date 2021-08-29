@@ -3,18 +3,17 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using SuperSurvey.UseCases.Ports.In;
-using SuperSurvey.WebApp.HostedServices;
+using System.Text.Json;
 
 namespace SuperSurvey.Adapters.Tests
 {
     [TestClass]
-    public class VoteCounterHandlerTests
+    public class SQSVoteRepositoryTests
     {
         [TestMethod]
         [TestCategory("Integration")]
-        public async Task Should_ReadMessageFromQueue_When_MessageIsAvailable()
+        public async Task Should_PostMessage_When_VoteCommandIsSaved()
         {
             int randomPort = Random.Shared.Next(49152, 65535);
             var testcontainersBuilder = new TestcontainersBuilder<TestcontainersContainer>()
@@ -34,17 +33,22 @@ namespace SuperSurvey.Adapters.Tests
                     ServiceURL = $"http://localhost:{ randomPort }"
                 });
                 await client.CreateQueueAsync(queueName);
+                var sut = new SQSVoteRepository(client, queueName);
+
+                var voteCommand = new VoteCommand()
+                {
+                    PollId = 1,
+                    SelectedOption = 999,
+                    UserId = 2,
+                    CreatedAt = DateTime.Now
+                };
+                await sut.Save(voteCommand);
+
                 string queueUrl = (await client.GetQueueUrlAsync(queueName)).QueueUrl;
-                await client.SendMessageAsync(queueUrl, "test");
-
-                var useCaseMock = new Mock<CountVotesUseCase>();
-                
-                var sut = new SQSVoteCounterHandler(client, useCaseMock.Object, queueUrl);
-
-                await sut.Execute();
-                
                 var result = await client.ReceiveMessageAsync(queueUrl);
-                result.Messages.Count.Should().Be(0);
+                result.Messages.Count.Should().Be(1);
+                var message = result.Messages[0];
+                message.Body.Should().Be(JsonSerializer.Serialize(voteCommand));
             }
         }
     }

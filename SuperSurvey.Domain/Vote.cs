@@ -8,8 +8,23 @@ namespace SuperSurvey.Domain
 {
     public class Vote
     {
-        public string Id {  get; set; }
-        public string ChosenOption { get; set; }
+        public int Id {  get; set; }
+        public int ChosenOption { get; set; }
         public int PollId { get; private set; }
+
+        public class Builder
+        {
+            private Vote _object = new Vote();
+            public Vote Build()
+            {
+                return _object;
+            }
+
+            public Builder WithId(int id)
+            {
+                _object.Id = id;
+                return this;
+            }
+        }
     }
 }

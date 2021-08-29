@@ -12,24 +12,19 @@ namespace SuperSurvey.UseCases
     public class CastVoteUseCaseImpl : CastVoteUseCase
     {
         private readonly PollRepository _pollRepository;
-        private readonly VoterRepository _voterRepository;
-        private readonly VoteRepository _voteRepository;
+        private readonly VoteCommandRepository _voteRepository;
 
         public CastVoteUseCaseImpl(PollRepository pollRepository,
-            VoterRepository voterRepository,
-            VoteRepository voteRepository)
+            VoteCommandRepository voteRepository)
         {
             _pollRepository = pollRepository;
-            _voterRepository = voterRepository;
             _voteRepository = voteRepository;
         }
         public async Task CastVote(VoteCommand command)
         {
-            Voter voter = await _voterRepository.GetById(command.UserId);
             Poll poll = await _pollRepository.GetById(command.PollId);
             Option option = poll.GetOption(command.SelectedOption);
-            Vote vote = voter.CastVote(option);
-            await _voteRepository.Save(vote);
+            await _voteRepository.Save(command);
         }
     }
 }

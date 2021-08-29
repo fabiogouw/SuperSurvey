@@ -9,7 +9,7 @@ namespace SuperSurvey.UseCases.Ports.Out
 {
     public interface PollRepository
     {
-        Task Save(Poll poll);
+        Task<Poll> Save(Poll poll);
         Task<List<Poll>> GetAllActive(DateTime currentDateTime);
         Task<Poll> GetById(int id);
     }

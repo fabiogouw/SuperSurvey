@@ -8,6 +8,6 @@ namespace SuperSurvey.UseCases.Ports.In
 {
     public interface CountVotesUseCase
     {
-        Task CountVotes(IEnumerable<UncountedVote> votes);
+        Task CountVotes(IEnumerable<VoteCommand> voteCommands);
     }
 }

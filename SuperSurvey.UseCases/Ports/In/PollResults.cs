@@ -11,7 +11,6 @@ namespace SuperSurvey.UseCases.Ports.In
         public class OptionResult
         {
             public string Description { get; set; }
-            public string Picture { get; set; }
             public int VotesCount { get; set; }
             public double VotesPercentage { get; set; }
         }
