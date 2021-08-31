@@ -25,7 +25,34 @@
         </dd>
     </dl>
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Opção
+            </th>
+            <th>
+                Votos
+			</th>
+            <th>
+                %
+			</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Results) 
+    {
+        <tr>
+            <td>
+                @item.Description
+            </td>
+            <td>
+                @item.VotesCount
+            </td>
+            <td>
+                @Math.Round(item.VotesPercentage, 2)
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -25,6 +25,18 @@ namespace SuperSurvey.Domain
                 _object.Id = id;
                 return this;
             }
+
+            public Builder WithPollId(int id)
+            {
+                _object.PollId = id;
+                return this;
+            }
+
+            public Builder WithChosenOption(int id)
+            {
+                _object.ChosenOption = id;
+                return this;
+            }
         }
     }
 }

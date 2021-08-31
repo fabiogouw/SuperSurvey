@@ -23,7 +23,7 @@ namespace SuperSurvey.UseCases
                 foreach(var voteCommand in voteCommandsByPoll)
                 {
                     var selectedOption = poll.GetOption(voteCommand.SelectedOption);
-                    var vote = voter.CastVote(selectedOption);
+                    var vote = voter.CastVote(poll, selectedOption);
                     poll.AddVote(vote);
                 }
                 await _pollRepository.Save(poll);

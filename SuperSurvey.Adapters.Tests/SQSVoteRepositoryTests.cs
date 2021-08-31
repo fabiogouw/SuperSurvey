@@ -32,8 +32,8 @@ namespace SuperSurvey.Adapters.Tests
                 {
                     ServiceURL = $"http://localhost:{ randomPort }"
                 });
-                await client.CreateQueueAsync(queueName);
-                var sut = new SQSVoteRepository(client, queueName);
+                var queue = await client.CreateQueueAsync(queueName);
+                var sut = new SQSVoteRepository(client, queue.QueueUrl);
 
                 var voteCommand = new VoteCommand()
                 {

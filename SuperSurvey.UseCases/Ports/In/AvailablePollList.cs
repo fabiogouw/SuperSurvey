@@ -10,11 +10,11 @@ namespace SuperSurvey.UseCases.Ports.In
     {
         public class AvailablePoll
         {
-            public string Id { get; set; }
+            public int Id { get; set; }
             public string Name {  get; set; }
         }
 
         public DateTime UpdatedAt { get; set; }
-        public List<AvailablePoll> Polls { get; private set; } = new List<AvailablePoll>();
+        public List<AvailablePoll> Polls { get; set; } = new List<AvailablePoll>();
     }
 }

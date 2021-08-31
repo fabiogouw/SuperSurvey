@@ -20,7 +20,7 @@ namespace SuperSurvey.WebApp.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Poll");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

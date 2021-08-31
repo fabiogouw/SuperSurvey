@@ -1,0 +1,51 @@
+﻿@model SuperSurvey.UseCases.Ports.In.PollDTO
+
+@{
+    ViewData["Title"] = "Vote";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Vote</h1>
+
+<div>
+    <h4>PollDTO</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                Opções
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Options) 
+    {
+        <tr>
+            <td>
+                @using(Html.BeginForm("Vote", "Poll", FormMethod.Post)) 
+                {
+                    @Html.HiddenFor(item => item.Id)
+                    @item.Description
+                    <input type="submit" value="Vote" class="btn btn-default" />
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+</div>

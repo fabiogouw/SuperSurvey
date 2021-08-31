@@ -8,9 +8,14 @@ namespace SuperSurvey.Domain
 {
     public class Voter
     {
-        public Vote CastVote(Option chosenOption)
+        public Vote CastVote(Poll poll, Option chosenOption)
         {
-            throw new NotImplementedException();
+            var vote = new Vote.Builder()
+                .WithId(1)
+                .WithPollId(poll.Id)
+                .WithChosenOption(chosenOption.Id)
+                .Build();
+            return vote;
         }
     }
 }

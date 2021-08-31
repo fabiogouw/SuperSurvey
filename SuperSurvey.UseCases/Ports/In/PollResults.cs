@@ -14,10 +14,10 @@ namespace SuperSurvey.UseCases.Ports.In
             public int VotesCount { get; set; }
             public double VotesPercentage { get; set; }
         }
-        public string PollId { get; set; }
+        public int PollId { get; set; }
 
         public DateTime UpdatedAt { get; set; }
-        public OptionResult[] Results { get; private set; }
+        public OptionResult[] Results { get; set; }
 
     }
 }

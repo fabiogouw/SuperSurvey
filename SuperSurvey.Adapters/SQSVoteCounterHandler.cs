@@ -19,7 +19,7 @@ public class SQSVoteCounterHandler
         _queueUrl = queueUrl;
     }
 
-    public async Task Execute()
+    public async Task<int> Execute()
     {
         var request = new ReceiveMessageRequest
         {
@@ -44,6 +44,7 @@ public class SQSVoteCounterHandler
             deleteBatch.Entries.Add(new DeleteMessageBatchRequestEntry(message.MessageId, message.ReceiptHandle));
         }
         await _client.DeleteMessageBatchAsync(deleteBatch);
+        return response.Messages.Count;
     }
 
     private VoteCommand ParseVote(Message message)

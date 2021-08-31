@@ -20,8 +20,13 @@ namespace SuperSurvey.UseCases
         public async Task<AvailablePollList> ListPolls()
         {
             var polls = await _pollRepository.GetAllActive(DateTime.Now);
-            
-            return new AvailablePollList();
+            var resuls = new AvailablePollList();
+            resuls.Polls.AddRange(polls.Select(poll => new AvailablePollList.AvailablePoll()
+            {
+                Id = poll.Id,
+                Name = poll.Name
+            }));
+            return resuls;
         }
 
         public async Task<PollDTO> GetPollById(int id)
@@ -30,7 +35,12 @@ namespace SuperSurvey.UseCases
             return new PollDTO()
             {
                 Id = poll.Id,
-                Name = poll.Name
+                Name = poll.Name,
+                Options = poll.Options.Select(option => new PollDTO.OptionDTO()
+                {
+                    Id = option.Id,
+                    Description = option.Description
+                }).ToList()
             };
         }
     }

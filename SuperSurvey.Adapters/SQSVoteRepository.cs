@@ -15,22 +15,17 @@ namespace SuperSurvey.Adapters
     public class SQSVoteRepository : VoteCommandRepository
     {
         private readonly AmazonSQSClient _client;
-        private readonly string _queueName;
-        private string _queueUrl;
+        private readonly string _queueUrl;
 
         public SQSVoteRepository(AmazonSQSClient client,
-            string queueName)
+            string queueUrl)
         {
             _client = client;
-            _queueName = queueName;
+            _queueUrl = queueUrl;
         }
 
         public async Task Save(VoteCommand command)
         {
-            if (string.IsNullOrEmpty(_queueUrl))
-            {
-                _queueUrl = (await _client.GetQueueUrlAsync(_queueName)).QueueUrl;
-            }
             string messageBody = JsonSerializer.Serialize(command);
             await _client.SendMessageAsync(_queueUrl, messageBody);
         }

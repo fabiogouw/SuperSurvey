@@ -15,7 +15,18 @@ namespace SuperSurvey.UseCases
         public async Task<PollResults> getResults(int pollId)
         {
             Poll poll = await _pollRepository.GetById(pollId);
-            return new PollResults();
+            double totalVotes = poll.Options.Sum(option => option.VoteCount);
+            var pollResults = new PollResults()
+            {
+                PollId = poll.Id,
+                Results = poll.Options.Select(option => new PollResults.OptionResult()
+                {
+                    Description = option.Description,
+                    VotesCount = option.VoteCount,
+                    VotesPercentage = totalVotes > 0 ? option.VoteCount / totalVotes * 100 : 0
+                }).ToArray()
+            };
+            return pollResults;
         }
     }
 }
