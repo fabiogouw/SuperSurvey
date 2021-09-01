@@ -24,28 +24,27 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
-    <table class="table">
-    <thead>
-        <tr>
-            <th>
-                Opções
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Options) 
-    {
-        <tr>
-            <td>
-                @using(Html.BeginForm("Vote", "Poll", FormMethod.Post)) 
-                {
-                    @Html.HiddenFor(item => item.Id)
-                    @item.Description
-                    <input type="submit" value="Vote" class="btn btn-default" />
-                }
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+    <div class="container">
+        <div class="row">
+        @foreach (var item in Model.Options) 
+        {
+            <div class="col-sm d-flex justify-content-center">
+                <div class="container">
+                    <div class="row">
+                        <h3>@item.Description</h3>
+					</div>
+				</div>
+                    <div class="row">
+                        @using(Html.BeginForm("Vote", "Poll", FormMethod.Post)) 
+                        {
+                            <div class="d-flex justify-content-center">
+                            @Html.HiddenFor(item => item.Id)
+                            <input type="submit" value="Vote" class="btn btn-secondary" />
+                            </div>
+                        }
+					</div>
+            </div>
+        }
+        </div>
+    </div>
 </div>
