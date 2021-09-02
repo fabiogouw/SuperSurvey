@@ -5,54 +5,31 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Results</h1>
-
+<h2>Resultados: @Model.Name</h2>
 <div>
-    <h4>PollResults</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PollId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PollId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
+    <div class="container">
+        <div class="row">
+        @foreach (var item in Model.Results) 
+        {
+            <div class="card bg-primary mb-3 col-sm m-1 p-1">
+                <div class="card-header">
+                    <h4>@item.Description</h4>
+				</div>
+                    <div class="card-body">
+                        <div class="">
+                            <div class="row d-flex justify-content-center">
+                                <img src="@item.PictureUrl" style="object-fit:contain;height:10em;" />
+                            </div>
+                            <div class="row pt-2">
+                                <h2 class="text-center">Votes: @item.VotesCount (@Math.Round(item.VotesPercentage, 0) %)</h2>
+                            </div>
+                        </div>
+					</div>
+            </div>
+        }
+        </div>
+        <div class="row">
+            <p>Last update @Model.UpdatedAt</p>
+        </div>
+    </div>
 </div>
-    <table class="table">
-    <thead>
-        <tr>
-            <th>
-                Opção
-            </th>
-            <th>
-                Votos
-			</th>
-            <th>
-                %
-			</th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.Results) 
-    {
-        <tr>
-            <td>
-                @item.Description
-            </td>
-            <td>
-                @item.VotesCount
-            </td>
-            <td>
-                @Math.Round(item.VotesPercentage, 2)
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>

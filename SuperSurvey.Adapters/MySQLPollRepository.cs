@@ -45,6 +45,7 @@ namespace SuperSurvey.Adapters
                         .WithId(option.Id)
                         .WithPoll(poll)
                         .WithDescription(option.Description)
+                        .WithPictureUrl(option.PictureUrl)
                         .WithVoteCount(option.VoteCount)
                         .WithUpdatedAt(option.UpdatedAt)
                         .Build());
@@ -108,11 +109,12 @@ namespace SuperSurvey.Adapters
 
         private (string, object) GetUpdateOptionCommand(Option current, Option updated, DateTime newUpdatedAt)
         {
-            return ("UPDATE Options SET Description = @Description, VoteCount = @VoteCount, UpdatedAt = @NewUpdatedAt WHERE Id = @Id AND UpdatedAt = @UpdatedAt;",
+            return ("UPDATE Options SET Description = @Description, PictureUrl = @PictureUrl, VoteCount = @VoteCount, UpdatedAt = @NewUpdatedAt WHERE Id = @Id AND UpdatedAt = @UpdatedAt;",
                 new
                 {
                     Id = current.Id,
                     Description = updated.Description,
+                    PictureUrl = updated.PictureUrl,
                     VoteCount = updated.VoteCount,
                     UpdatedAt = current.UpdatedAt,
                     NewUpdatedAt = newUpdatedAt
@@ -131,12 +133,13 @@ namespace SuperSurvey.Adapters
 
         private (string, object) GetInsertOptionCommand(Option updated, DateTime newUpdatedAt)
         {
-            return ("INSERT INTO Options (Id, PollId, Description, VoteCount, UpdatedAt) VALUES (@Id, @PollId, @Description, @VoteCount, @NewUpdatedAt);",
+            return ("INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (@Id, @PollId, @Description, @PictureUrl, @VoteCount, @NewUpdatedAt);",
             new
             {
                 Id = updated.Id,
                 PollId = updated.Poll.Id,
                 Description = updated.Description,
+                PictureUrl = updated.PictureUrl,
                 VoteCount = updated.VoteCount,
                 UpdatedAt = updated.UpdatedAt,
                 NewUpdatedAt = newUpdatedAt

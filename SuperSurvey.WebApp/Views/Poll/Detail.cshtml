@@ -5,41 +5,31 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Vote</h1>
-
 <div>
-    <h4>PollDTO</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
+    <div class="row m-1">
+        <div class="col-sm m-1 p-1">
+            <h2>@Model.Name</h2>
+        </div>
+    </div>
     <div class="container">
         <div class="row">
         @foreach (var item in Model.Options) 
         {
-            <div class="col-sm d-flex justify-content-center">
-                <div class="container">
-                    <div class="row">
-                        <h3>@item.Description</h3>
-					</div>
+            <div class="card bg-primary mb-3 col-sm m-1 p-1">
+                <div class="card-header">
+                    <h4>@item.Description</h4>
 				</div>
-                    <div class="row">
-                        @using(Html.BeginForm("Vote", "Poll", FormMethod.Post)) 
+                    <div class="card-body">
+                        @using(Html.BeginForm("Vote", "Poll", new { Model.Id }, FormMethod.Post)) 
                         {
-                            <div class="d-flex justify-content-center">
-                            @Html.HiddenFor(item => item.Id)
-                            <input type="submit" value="Vote" class="btn btn-secondary" />
+                            <div class="">
+                                <input type="hidden" id="VoteId" name="VoteId" value="@item.Id" />
+                                <div class="row d-flex justify-content-center">
+                                    <img src="@item.PictureUrl" style="object-fit:contain;height:10em;" />
+                                </div>
+                                <div class="row pt-2">
+                                    <input type="submit" value="Votar" class="btn btn-secondary" />
+                                </div>
                             </div>
                         }
 					</div>

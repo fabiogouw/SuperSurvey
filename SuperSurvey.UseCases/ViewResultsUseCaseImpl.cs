@@ -19,9 +19,12 @@ namespace SuperSurvey.UseCases
             var pollResults = new PollResults()
             {
                 PollId = poll.Id,
+                Name = poll.Name,
+                UpdatedAt = poll.UpdatedAt,
                 Results = poll.Options.Select(option => new PollResults.OptionResult()
                 {
                     Description = option.Description,
+                    PictureUrl = option.PictureUrl,
                     VotesCount = option.VoteCount,
                     VotesPercentage = totalVotes > 0 ? option.VoteCount / totalVotes * 100 : 0
                 }).ToArray()

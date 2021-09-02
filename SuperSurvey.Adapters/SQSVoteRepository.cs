@@ -14,10 +14,10 @@ namespace SuperSurvey.Adapters
 {
     public class SQSVoteRepository : VoteCommandRepository
     {
-        private readonly AmazonSQSClient _client;
+        private readonly IAmazonSQS _client;
         private readonly string _queueUrl;
 
-        public SQSVoteRepository(AmazonSQSClient client,
+        public SQSVoteRepository(IAmazonSQS client,
             string queueUrl)
         {
             _client = client;

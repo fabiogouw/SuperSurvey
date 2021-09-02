@@ -11,6 +11,8 @@ namespace SuperSurvey.Domain
         public int Id { get; set; }
         public Poll Poll {  get; internal set; }
         public string Description { get; set; }
+
+        public string PictureUrl { get; set; }
         public int VoteCount { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -42,6 +44,12 @@ namespace SuperSurvey.Domain
             public Builder WithDescription(string description)
             {
                 _object.Description = description;
+                return this;
+            }
+
+            public Builder WithPictureUrl(string pictureUrl)
+            {
+                _object.PictureUrl = pictureUrl;
                 return this;
             }
 

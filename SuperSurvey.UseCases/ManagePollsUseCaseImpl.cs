@@ -39,7 +39,8 @@ namespace SuperSurvey.UseCases
                 Options = poll.Options.Select(option => new PollDTO.OptionDTO()
                 {
                     Id = option.Id,
-                    Description = option.Description
+                    Description = option.Description,
+                    PictureUrl = option.PictureUrl
                 }).ToList()
             };
         }

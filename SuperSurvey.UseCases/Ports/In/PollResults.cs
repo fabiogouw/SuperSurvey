@@ -11,10 +11,12 @@ namespace SuperSurvey.UseCases.Ports.In
         public class OptionResult
         {
             public string Description { get; set; }
+            public string PictureUrl { get; set; }
             public int VotesCount { get; set; }
             public double VotesPercentage { get; set; }
         }
         public int PollId { get; set; }
+        public string Name { get; set; }
 
         public DateTime UpdatedAt { get; set; }
         public OptionResult[] Results { get; set; }

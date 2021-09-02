@@ -6,11 +6,11 @@ using System.Text.Json;
 namespace SuperSurvey.WebApp.HostedServices;
 public class SQSVoteCounterHandler
 {
-    private readonly AmazonSQSClient _client;
+    private readonly IAmazonSQS _client;
     private readonly CountVotesUseCase _countVotesUseCase;
     private readonly string _queueUrl;
 
-    public SQSVoteCounterHandler(AmazonSQSClient client,
+    public SQSVoteCounterHandler(IAmazonSQS client,
         CountVotesUseCase countVotesUseCase,
         string queueUrl)
     {

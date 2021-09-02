@@ -10,7 +10,7 @@ using SuperSurvey.WebApp.HostedServices;
 namespace SuperSurvey.Adapters.Tests
 {
     [TestClass]
-    public class VoteCounterHandlerTests
+    public class SQSVoteCounterHandlerTests
     {
         [TestMethod]
         [TestCategory("Integration")]

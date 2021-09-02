@@ -5,23 +5,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h2>Selecione a pesquisa que você quer responder.</h2>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Polls) {
-        <tr>
-            <td>
-                @Html.ActionLink(item.Name, "Detail", "Poll", new { item.Id })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div>
+    <div class="container">
+        <div class="row">
+        @foreach (var item in Model.Polls) 
+        {
+            <div class="card bg-primary mb-3 col-sm m-1 p-1">
+                <div class="card-body">
+                    <div class="">
+                        <div class="row">
+                            <h4 class="card-title">@item.Name</h4>
+                        </div>
+                        <div class="row pt-2">
+                            @Html.ActionLink("Responder", "Detail", "Poll", new { item.Id }, new { @class = "btn btn-secondary"})
+                        </div>
+                    </div>
+				</div>
+            </div>
+        }
+        </div>
+    </div>
+</div>

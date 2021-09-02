@@ -3,15 +3,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SuperSurvey.WebApp</title>
+    <title>@ViewData["Title"] - Super Survey</title>
     <link rel="stylesheet" href="~/lib/bootswatch/vapor/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Super Survey</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Super Survey [@ViewData["Title"]]</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -23,7 +23,7 @@
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container mt-2">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -31,7 +31,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - SuperSurvey.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2021 - Super Survey
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

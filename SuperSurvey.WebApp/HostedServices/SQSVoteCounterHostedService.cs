@@ -3,15 +3,15 @@ using Amazon.SQS;
 using SuperSurvey.UseCases.Ports.In;
 
 namespace SuperSurvey.WebApp.HostedServices;
-public class VoteCounterHostedService : IHostedService, IDisposable
+public class SQSVoteCounterHostedService : IHostedService, IDisposable
 {
     private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
     private readonly SQSVoteCounterHandler _handler;
-    private readonly ILogger<VoteCounterHostedService> _logger;
+    private readonly ILogger<SQSVoteCounterHostedService> _logger;
     private Timer _timer;
 
-    public VoteCounterHostedService(ILogger<VoteCounterHostedService> logger,
-        AmazonSQSClient client,
+    public SQSVoteCounterHostedService(ILogger<SQSVoteCounterHostedService> logger,
+        IAmazonSQS client,
         CountVotesUseCase countVotesUseCase,
         IConfiguration configuration)
     {

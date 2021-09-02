@@ -36,7 +36,7 @@ public class PollController : Controller
     //[ValidateAntiForgeryToken]
     public async Task<ActionResult> Vote(int id, IFormCollection collection)
     {
-        int voteId = int.Parse(collection["Id"]);
+        int voteId = int.Parse(collection["VoteId"]);
         await _castVoteUseCase.CastVote(new VoteCommand()
         {
             CreatedAt = DateTime.Now,

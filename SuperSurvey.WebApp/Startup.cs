@@ -19,29 +19,39 @@ namespace SuperSurvey.WebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private IWebHostEnvironment _currentEnv;
+        public Startup(IConfiguration configuration, IWebHostEnvironment currentEnv)
         {
             Configuration = configuration;
+            _currentEnv = currentEnv;
         }
 
         public IConfiguration Configuration { get; }
 
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (_currentEnv.IsDevelopment())
+            {
+                services.AddTransient<IAmazonSQS>(_ => new AmazonSQSClient("test", "test", new AmazonSQSConfig()
+                {
+                    ServiceURL = $"http://localhost:4566"
+                }));
+            }
+            else
+            {
+                services.AddTransient<IAmazonSQS, AmazonSQSClient>();
+            }
             services.AddControllersWithViews();
             services.AddTransient<ManagePollsUseCase, ManagePollsUseCaseImpl>();
             services.AddTransient<CountVotesUseCase, CountVotesUseCaseImpl>();
             services.AddTransient<CastVoteUseCase, CastVoteUseCaseImpl>();
             services.AddTransient<ViewResultsUseCase, ViewResultsUseCaseImpl>();
             services.AddTransient<VoteCommandRepository>(svcProvider => 
-                new SQSVoteRepository(svcProvider.GetRequiredService<AmazonSQSClient>(), Configuration.GetConnectionString("VoteQueue")));
+                new SQSVoteRepository(svcProvider.GetRequiredService<IAmazonSQS>(), Configuration.GetConnectionString("VoteQueue")));
             services.AddTransient<PollRepository>(_ => new MySQLPollRepository(Configuration.GetConnectionString("PollDb")));
-            services.AddTransient(_ => new AmazonSQSClient("test", "test", new AmazonSQSConfig()
-            {
-                ServiceURL = $"http://localhost:4566"
-            }));
-            services.AddHostedService<VoteCounterHostedService>();
+            services.AddHostedService<SQSVoteCounterHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
