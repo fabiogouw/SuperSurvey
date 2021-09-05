@@ -20,3 +20,6 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SuperSurvey.WebApp.dll"]
+
+ENV ConnectionStrings__PollDb="Server=localhost;Database=super_survey;Uid=super_survey_user;Pwd=123456;"
+ENV ConnectionStrings__VoteQueue="http://localhost:4566/000000000000/votes"

@@ -36,7 +36,7 @@ namespace SuperSurvey.WebApp
             {
                 services.AddTransient<IAmazonSQS>(_ => new AmazonSQSClient("test", "test", new AmazonSQSConfig()
                 {
-                    ServiceURL = $"http://localhost:4566"
+                    ServiceURL = Configuration.GetConnectionString("AWSServiceURL")
                 }));
             }
             else
