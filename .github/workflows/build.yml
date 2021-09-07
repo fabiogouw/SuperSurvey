@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+        include-prerelease: true
+    - name: Restore dependencies
+      run: dotnet restore ./src/SuperSurvey.sln
+    - name: Build
+      run: dotnet build ./src/SuperSurvey.sln --no-restore
+    - name: Unit Tests
+      run: dotnet test ./src/SuperSurvey.sln --no-build --verbosity normal --filter Category=Unit
+    - name: Pull docker images
+      run: |
+        docker pull localstack/localstack:latest
+        docker pull mysql:8.0.18
+    - name: Integration Tests
+      run: dotnet test ./src/SuperSurvey.sln --no-build --verbosity normal --filter Category=Integration
