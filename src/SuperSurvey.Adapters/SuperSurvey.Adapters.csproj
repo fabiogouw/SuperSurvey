@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.0.54" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.1.4" />
     <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />

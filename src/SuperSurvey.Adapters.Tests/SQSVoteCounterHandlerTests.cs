@@ -2,18 +2,17 @@
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Moq;
 using SuperSurvey.UseCases.Ports.In;
 using SuperSurvey.WebApp.HostedServices;
 
 namespace SuperSurvey.Adapters.Tests
 {
-    [TestClass]
     public class SQSVoteCounterHandlerTests
     {
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Fact]
+        [Trait("Category", "Integration")]
         public async Task Should_ReadMessageFromQueue_When_MessageIsAvailable()
         {
             int randomPort = Random.Shared.Next(49152, 65535);
@@ -29,7 +28,7 @@ namespace SuperSurvey.Adapters.Tests
             {
                 string queueName = "my-queue";
                 await testcontainer.StartAsync();
-                var client = new AmazonSQSClient("test", "test", new AmazonSQSConfig()
+                var client = new AmazonSQSClient("anything", "anything", new AmazonSQSConfig()
                 {
                     ServiceURL = $"http://localhost:{ randomPort }"
                 });

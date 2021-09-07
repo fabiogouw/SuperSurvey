@@ -4,8 +4,6 @@ namespace SuperSurvey.Domain
 {
     public class Poll
     {
-        private Option[] _options;
-
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime ExpiresAt { get; set; }

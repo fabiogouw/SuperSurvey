@@ -8,7 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNet.Testcontainers" Version="1.6.0-beta.1966" />
     <PackageReference Include="FluentAssertions" Version="6.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
@@ -24,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SuperSurvey.Adapters\SuperSurvey.Adapters.csproj" />
+    <ProjectReference Include="..\SuperSurvey.UseCases\SuperSurvey.UseCases.csproj" />
   </ItemGroup>
 
 </Project>

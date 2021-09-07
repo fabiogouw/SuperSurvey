@@ -1,11 +1,6 @@
 ﻿using SuperSurvey.Domain;
 using SuperSurvey.UseCases.Ports.In;
 using SuperSurvey.UseCases.Ports.Out;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperSurvey.UseCases
 {

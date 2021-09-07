@@ -8,10 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNet.Testcontainers" Version="1.6.0-beta.1966" />
     <PackageReference Include="FluentAssertions" Version="6.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
-    <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SuperSurvey.Adapters\SuperSurvey.Adapters.csproj" />
+    <ProjectReference Include="..\SuperSurvey.Domain\SuperSurvey.Domain.csproj" />
   </ItemGroup>
 
 </Project>
