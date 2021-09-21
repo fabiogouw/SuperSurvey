@@ -13,9 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSurvey.Adapters", "Sup
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSurvey.Adapters.Tests", "SuperSurvey.Adapters.Tests\SuperSurvey.Adapters.Tests.csproj", "{08F0799C-1854-4108-8A84-F9C2E8FE1B44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSurvey.Domain.Tests", "SuperSurvey.Domain.Tests\SuperSurvey.Domain.Tests.csproj", "{6FAAE467-CA93-4239-9421-F08B6CE1FA86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSurvey.Domain.Tests", "SuperSurvey.Domain.Tests\SuperSurvey.Domain.Tests.csproj", "{6FAAE467-CA93-4239-9421-F08B6CE1FA86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSurvey.UseCases.Tests", "SuperSurvey.UseCases.Tests\SuperSurvey.UseCases.Tests.csproj", "{EE650BC6-E406-4386-8B78-E69260431A07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SuperSurvey.UseCases.Tests", "SuperSurvey.UseCases.Tests\SuperSurvey.UseCases.Tests.csproj", "{EE650BC6-E406-4386-8B78-E69260431A07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9F535B0B-FF82-44FF-95A6-3D09CC065132}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{70A03DF9-7121-4CA6-84D2-A610EA649DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,6 +58,15 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EECFE325-1507-4FB1-BD1B-04D5C287B1C1} = {9F535B0B-FF82-44FF-95A6-3D09CC065132}
+		{0859599E-186D-4459-A9E7-CB7356F2F79A} = {9F535B0B-FF82-44FF-95A6-3D09CC065132}
+		{1D8E63B8-21D1-4464-B436-EC9498CEF99E} = {9F535B0B-FF82-44FF-95A6-3D09CC065132}
+		{DDA80FC3-8531-4D30-AB3A-A1174DB601BB} = {9F535B0B-FF82-44FF-95A6-3D09CC065132}
+		{08F0799C-1854-4108-8A84-F9C2E8FE1B44} = {70A03DF9-7121-4CA6-84D2-A610EA649DF3}
+		{6FAAE467-CA93-4239-9421-F08B6CE1FA86} = {70A03DF9-7121-4CA6-84D2-A610EA649DF3}
+		{EE650BC6-E406-4386-8B78-E69260431A07} = {70A03DF9-7121-4CA6-84D2-A610EA649DF3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B9BC5C0D-DA4A-489D-ACAD-9B27E527D083}
