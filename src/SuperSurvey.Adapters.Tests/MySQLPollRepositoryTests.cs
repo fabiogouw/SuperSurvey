@@ -51,7 +51,7 @@ namespace SuperSurvey.Adapters.Tests
             await using (var testcontainer = testcontainersBuilder.Build())
             {
                 await testcontainer.StartAsync();
-                await CreateTables(testcontainer);
+                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
                 await ExecuteScript(testcontainer, @"
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (1, 'ABC', '2021-08-21T14:56', '2021-08-23T09:03');
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (2, 'ABC', '2021-08-23T14:56', '2021-08-23T09:03');
@@ -81,11 +81,10 @@ namespace SuperSurvey.Adapters.Tests
             await using (var testcontainer = testcontainersBuilder.Build())
             {
                 await testcontainer.StartAsync();
-                await CreateTables(testcontainer);
+                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
                 await ExecuteScript(testcontainer,
                     "INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (123, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');"
                     );
-                await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "mysql -udavidbowie -psecret db < /data.sql", "" });
 
                 var sut = new MySQLPollRepository(testcontainer.ConnectionString);
                 var poll = await sut.GetById(123);
@@ -114,13 +113,12 @@ namespace SuperSurvey.Adapters.Tests
             await using (var testcontainer = testcontainersBuilder.Build())
             {
                 await testcontainer.StartAsync();
-                await CreateTables(testcontainer);
+                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
                 await ExecuteScript(testcontainer, @"
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (123, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');
                 INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (1, 123, 'ABC Option 1', NULL, 10, '2021-08-23T09:03');
                 INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (2, 123, 'ABC Option 2', 'http://someurl', 13, '2021-08-23T09:03');
                 ");
-                await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "mysql -udavidbowie -psecret db < /data.sql", "" });
 
                 var poll = new Poll.Builder()
                     .WithId(123)
@@ -155,12 +153,6 @@ namespace SuperSurvey.Adapters.Tests
                 option.Description.Should().Be("New ABC Option 2");
                 option.PictureUrl.Should().Be("http://newurl");
             }
-        }
-
-        private async Task CreateTables(MySqlTestcontainer testcontainer)
-        {
-            await testcontainer.CopyFileAsync("structure.sql", Encoding.ASCII.GetBytes(CREATE_TABLE_SCRIPT));
-            await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", "mysql -udavidbowie -psecret db < /structure.sql", "" });
         }
 
         private async Task ExecuteScript(MySqlTestcontainer testcontainer, string scriptContent)
