@@ -34,17 +34,17 @@ namespace SuperSurvey.Adapters.Tests
                 {
                     ServiceURL = $"http://localhost:{ randomPort }"
                 });
-                await client.CreateQueueAsync(queueName);
-                string queueUrl = (await client.GetQueueUrlAsync(queueName)).QueueUrl;
-                await client.SendMessageAsync(queueUrl, "test");
+                var queue = await client.CreateQueueAsync(queueName);
+
+                await client.SendMessageAsync(queue.QueueUrl, "test");
 
                 var useCaseMock = new Mock<CountVotesUseCase>();
                 
-                var sut = new SQSVoteCounterHandler(client, useCaseMock.Object, queueUrl);
+                var sut = new SQSVoteCounterHandler(client, useCaseMock.Object, queue.QueueUrl);
 
                 await sut.Execute();
                 
-                var result = await client.ReceiveMessageAsync(queueUrl);
+                var result = await client.ReceiveMessageAsync(queue.QueueUrl);
                 result.Messages.Count.Should().Be(0);
             }
         }

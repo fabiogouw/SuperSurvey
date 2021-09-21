@@ -44,9 +44,8 @@ namespace SuperSurvey.Adapters.Tests
                     CreatedAt = DateTime.Now
                 };
                 await sut.Save(voteCommand);
-
-                string queueUrl = (await client.GetQueueUrlAsync(queueName)).QueueUrl;
-                var result = await client.ReceiveMessageAsync(queueUrl);
+                
+                var result = await client.ReceiveMessageAsync(queue.QueueUrl);
                 result.Messages.Count.Should().Be(1);
                 var message = result.Messages[0];
                 message.Body.Should().Be(JsonSerializer.Serialize(voteCommand));
