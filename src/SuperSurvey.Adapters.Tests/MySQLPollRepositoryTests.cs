@@ -13,26 +13,26 @@ namespace SuperSurvey.Adapters.Tests
 {
     public class MySQLPollRepositoryTests
     {
-        private readonly string CREATE_TABLE_SCRIPT =
-            @"USE db;
-        CREATE TABLE `Polls` (
-	        `Id` INT NOT NULL,
-	        `Name` VARCHAR(255) NOT NULL,
-	        `ExpiresAt` DATETIME NOT NULL,
-	        `UpdatedAt` DATETIME NOT NULL,
-	        KEY `Ix_Expires` (`ExpiresAt`) USING BTREE,
-            PRIMARY KEY(`Id`)
-        );
-        CREATE TABLE `Options` (
-	        `Id` INT NOT NULL,
-            `PollId` INT NOT NULL,
-	        `Description` VARCHAR(255) NOT NULL,
-            `PictureUrl` VARCHAR(255) NULL,
-	        `VoteCount` INT NOT NULL,
-	        `UpdatedAt` DATETIME NOT NULL,
-            PRIMARY KEY(`Id`),
-            FOREIGN KEY (PollId) REFERENCES Polls(Id)
-        );
+        private readonly string CREATE_TABLE_SCRIPT =@"
+            USE db;
+            CREATE TABLE `Polls` (
+	            `Id` INT NOT NULL,
+	            `Name` VARCHAR(255) NOT NULL,
+	            `ExpiresAt` DATETIME NOT NULL,
+	            `UpdatedAt` DATETIME NOT NULL,
+	            KEY `Ix_Expires` (`ExpiresAt`) USING BTREE,
+                PRIMARY KEY(`Id`)
+            );
+            CREATE TABLE `Options` (
+	            `Id` INT NOT NULL,
+                `PollId` INT NOT NULL,
+	            `Description` VARCHAR(255) NOT NULL,
+                `PictureUrl` VARCHAR(255) NULL,
+	            `VoteCount` INT NOT NULL,
+	            `UpdatedAt` DATETIME NOT NULL,
+                PRIMARY KEY(`Id`),
+                FOREIGN KEY (PollId) REFERENCES Polls(Id)
+            );
         ";
 
         [Fact]
