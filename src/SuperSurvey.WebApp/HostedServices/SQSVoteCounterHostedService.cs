@@ -1,6 +1,11 @@
-﻿
-using Amazon.SQS;
+﻿using Amazon.SQS;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SuperSurvey.UseCases.Ports.In;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SuperSurvey.WebApp.HostedServices;
 public class SQSVoteCounterHostedService : IHostedService, IDisposable

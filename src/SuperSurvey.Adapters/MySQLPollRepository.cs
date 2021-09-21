@@ -3,6 +3,10 @@ using MoreLinq;
 using MySql.Data.MySqlClient;
 using SuperSurvey.Domain;
 using SuperSurvey.UseCases.Ports.Out;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace SuperSurvey.Adapters
 {

@@ -3,6 +3,8 @@ using Moq;
 using SuperSurvey.Domain;
 using SuperSurvey.UseCases.Ports.In;
 using SuperSurvey.UseCases.Ports.Out;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace SuperSurvey.UseCases.Tests
 {

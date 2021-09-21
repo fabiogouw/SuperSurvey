@@ -1,7 +1,9 @@
 ﻿using Amazon.SQS;
 using Amazon.SQS.Model;
 using SuperSurvey.UseCases.Ports.In;
+using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace SuperSurvey.WebApp.HostedServices;
 public class SQSVoteCounterHandler
