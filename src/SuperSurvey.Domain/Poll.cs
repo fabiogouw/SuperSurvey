@@ -6,11 +6,21 @@ namespace SuperSurvey.Domain
 {
     public class Poll
     {
+        private static readonly Poll _empty = new();
+        public Poll()
+        {
+            Name = String.Empty;
+        }
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime ExpiresAt { get; set; }
         public DateTime UpdatedAt { get; private set; }
         public List<Option> Options { get; private set; } = new List<Option>();
+
+        public static Poll Empty
+        {
+            get { return _empty; }
+        }
 
         public Option GetOption(int optionId)
         {
@@ -25,7 +35,7 @@ namespace SuperSurvey.Domain
 
         public class Builder
         {
-            private Poll _object = new Poll();
+            private readonly Poll _object = new();
             public Poll Build()
             {
                 return _object;

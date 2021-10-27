@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using SuperSurvey.Adapters;
 using SuperSurvey.UseCases;
 using SuperSurvey.UseCases.Ports.In;
@@ -19,7 +20,7 @@ namespace SuperSurvey.WebApp
 {
     public class Startup
     {
-        private IWebHostEnvironment _currentEnv;
+        private readonly IWebHostEnvironment _currentEnv;
         public Startup(IConfiguration configuration, IWebHostEnvironment currentEnv)
         {
             Configuration = configuration;
@@ -38,10 +39,17 @@ namespace SuperSurvey.WebApp
                 {
                     ServiceURL = Configuration.GetConnectionString("AWSServiceURL")
                 }));
+                services.AddTransient<PollRepository>(_ => new MySQLPollRepository(Configuration.GetConnectionString("PollDb")));
             }
             else
             {
                 services.AddTransient<IAmazonSQS, AmazonSQSClient>();
+                services.AddTransient<PollRepository>(svcProvider => new AWSMySQLPollRepository(
+                    svcProvider.GetRequiredService<ILogger<AWSMySQLPollRepository>>(),
+                    Configuration.GetConnectionString("PollDbRegion"),
+                    Configuration.GetConnectionString("PollDbEndpoint"),
+                    Configuration.GetConnectionString("PollDbUser"),
+                    Configuration.GetConnectionString("PollDb")));
             }
             services.AddControllersWithViews();
             services.AddTransient<ManagePollsUseCase, ManagePollsUseCaseImpl>();
@@ -50,8 +58,8 @@ namespace SuperSurvey.WebApp
             services.AddTransient<ViewResultsUseCase, ViewResultsUseCaseImpl>();
             services.AddTransient<VoteCommandRepository>(svcProvider => 
                 new SQSVoteRepository(svcProvider.GetRequiredService<IAmazonSQS>(), Configuration.GetConnectionString("VoteQueue")));
-            services.AddTransient<PollRepository>(_ => new MySQLPollRepository(Configuration.GetConnectionString("PollDb")));
             services.AddHostedService<SQSVoteCounterHostedService>();
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,6 +88,8 @@ namespace SuperSurvey.WebApp
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseHealthChecks("/health");
         }
     }
 }

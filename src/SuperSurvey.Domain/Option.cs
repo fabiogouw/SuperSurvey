@@ -8,6 +8,12 @@ namespace SuperSurvey.Domain
 {
     public class Option
     {
+        public Option()
+        {
+            Description = string.Empty;
+            PictureUrl = string.Empty;
+            Poll = Poll.Empty;
+        }
         public int Id { get; set; }
         public Poll Poll {  get; internal set; }
         public string Description { get; set; }
@@ -23,7 +29,7 @@ namespace SuperSurvey.Domain
 
         public class Builder
         {
-            private Option _object = new Option();
+            private readonly Option _object = new();
             public Option Build()
             {
                 return _object;

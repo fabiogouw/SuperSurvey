@@ -10,9 +10,18 @@ namespace SuperSurvey.UseCases.Ports.In
     {
         public class OptionDTO
         {
+            public OptionDTO()
+            {
+                Description = string.Empty;
+                PictureUrl = string.Empty;
+            }
             public int Id { get; set; }
             public string Description { get; set; }
             public string PictureUrl { get; set; }
+        }
+        public PollDTO()
+        {
+            Name = string.Empty;
         }
         public int Id {  get; set; } 
         public string Name {  get; set; }

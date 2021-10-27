@@ -19,25 +19,21 @@ namespace SuperSurvey.Adapters
         }
         public async Task<List<Poll>> GetAllActive(DateTime currentDateTime)
         {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var polls = await connection.QueryAsync<Poll>("SELECT * FROM Polls WHERE ExpiresAt >= @ExpiresAt ORDER BY Name;", new { ExpiresAt = currentDateTime });
-                polls = await GetOptionsByPollIds(connection, polls);
-                return polls.ToList();
-            }
+            using var connection = new MySqlConnection(_connectionString);
+            var polls = await connection.QueryAsync<Poll>("SELECT * FROM Polls WHERE ExpiresAt >= @ExpiresAt ORDER BY Name;", new { ExpiresAt = currentDateTime });
+            polls = await GetOptionsByPollIds(connection, polls);
+            return polls.ToList();
         }
 
         public async Task<Poll> GetById(int id)
         {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                var poll = await connection.QuerySingleAsync<Poll>("SELECT * FROM Polls WHERE Id = @Id;", new { Id = id });
-                poll = (await GetOptionsByPollIds(connection, new[] { poll })).Single();
-                return poll;
-            }
+            using var connection = new MySqlConnection(_connectionString);
+            var poll = await connection.QuerySingleAsync<Poll>("SELECT * FROM Polls WHERE Id = @Id;", new { Id = id });
+            poll = (await GetOptionsByPollIds(connection, new[] { poll })).Single();
+            return poll;
         }
 
-        private async Task<IEnumerable<Poll>> GetOptionsByPollIds(MySqlConnection connection, IEnumerable<Poll> polls)
+        private static async Task<IEnumerable<Poll>> GetOptionsByPollIds(MySqlConnection connection, IEnumerable<Poll> polls)
         {
             int[] pollIds = polls.Select(p => p.Id).ToArray();
             var options = await connection.QueryAsync("SELECT * FROM Options WHERE PollId IN @PollIds;", new { PollIds = pollIds });
@@ -61,39 +57,38 @@ namespace SuperSurvey.Adapters
         public async Task<Poll> Save(Poll poll)
         {
             var currentPoll = await GetById(poll.Id);
-            string sql = UpdateOrInsertPoll(currentPoll, poll);
+            string sql = UpdateOrInsertPoll(currentPoll);
             var updatedTime = DateTime.Now;
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                using (var transaction = connection.BeginTransaction())
+                using var transaction = connection.BeginTransaction();
+                await connection.ExecuteAsync(sql, new
                 {
-                    await connection.ExecuteAsync(sql, new { 
-                        Id = poll.Id,
-                        Name = poll.Name,
-                        ExpiresAt = poll.ExpiresAt,
-                        UpdatedAt = poll.UpdatedAt,
-                        NewUpdatedAt = updatedTime
-                    }, transaction: transaction);
+                    poll.Id,
+                    poll.Name,
+                    poll.ExpiresAt,
+                    poll.UpdatedAt,
+                    NewUpdatedAt = updatedTime
+                }, transaction: transaction);
 
-                    var comparedOptions = currentPoll.Options.FullJoin(poll.Options, x => x.Id,
-                        @left => GetDeleteOptionCommand(@left),
-                        @right => GetInsertOptionCommand(@right, updatedTime),
-                        (@left, @right) => GetUpdateOptionCommand(@left, @right, updatedTime));
+                var comparedOptions = currentPoll.Options.FullJoin(poll.Options, x => x.Id,
+                    @left => GetDeleteOptionCommand(@left),
+                    @right => GetInsertOptionCommand(@right, updatedTime),
+                    (@left, @right) => GetUpdateOptionCommand(@left, @right, updatedTime));
 
-                    foreach(var comparison in comparedOptions)
-                    {
-                        await connection.ExecuteAsync(comparison.Item1, comparison.Item2, transaction: transaction);
-                    }
-
-                    transaction.Commit();
+                foreach (var comparison in comparedOptions)
+                {
+                    await connection.ExecuteAsync(comparison.Item1, comparison.Item2, transaction: transaction);
                 }
+
+                transaction.Commit();
 
             }
             return await GetById(poll.Id);
         }
 
-        private string UpdateOrInsertPoll(Poll currentPoll, Poll updatedPoll)
+        private static string UpdateOrInsertPoll(Poll currentPoll)
         {
             if(currentPoll == null)
             {
@@ -111,41 +106,41 @@ namespace SuperSurvey.Adapters
                 ";
         }
 
-        private (string, object) GetUpdateOptionCommand(Option current, Option updated, DateTime newUpdatedAt)
+        private static (string, object) GetUpdateOptionCommand(Option current, Option updated, DateTime newUpdatedAt)
         {
             return ("UPDATE Options SET Description = @Description, PictureUrl = @PictureUrl, VoteCount = @VoteCount, UpdatedAt = @NewUpdatedAt WHERE Id = @Id AND UpdatedAt = @UpdatedAt;",
                 new
                 {
-                    Id = current.Id,
-                    Description = updated.Description,
-                    PictureUrl = updated.PictureUrl,
-                    VoteCount = updated.VoteCount,
-                    UpdatedAt = current.UpdatedAt,
+                    current.Id,
+                    updated.Description,
+                    updated.PictureUrl,
+                    updated.VoteCount,
+                    current.UpdatedAt,
                     NewUpdatedAt = newUpdatedAt
                 });
         }
 
-        private (string, object) GetDeleteOptionCommand(Option current)
+        private static (string, object) GetDeleteOptionCommand(Option current)
         {
             return ("DELETE FROM Options WHERE Id = @Id AND UpdatedAt = @UpdatedAt;",
                 new
                 {
-                    Id = current.Id,
-                    UpdatedAt = current.UpdatedAt
+                    current.Id,
+                    current.UpdatedAt
                 });
         }
 
-        private (string, object) GetInsertOptionCommand(Option updated, DateTime newUpdatedAt)
+        private static (string, object) GetInsertOptionCommand(Option updated, DateTime newUpdatedAt)
         {
             return ("INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (@Id, @PollId, @Description, @PictureUrl, @VoteCount, @NewUpdatedAt);",
             new
             {
-                Id = updated.Id,
+                updated.Id,
                 PollId = updated.Poll.Id,
-                Description = updated.Description,
-                PictureUrl = updated.PictureUrl,
-                VoteCount = updated.VoteCount,
-                UpdatedAt = updated.UpdatedAt,
+                updated.Description,
+                updated.PictureUrl,
+                updated.VoteCount,
+                updated.UpdatedAt,
                 NewUpdatedAt = newUpdatedAt
             });
         }

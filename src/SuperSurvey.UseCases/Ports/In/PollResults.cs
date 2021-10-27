@@ -10,10 +10,20 @@ namespace SuperSurvey.UseCases.Ports.In
     {
         public class OptionResult
         {
+            public OptionResult()
+            {
+                Description = string.Empty;
+                PictureUrl = string.Empty;
+            }
             public string Description { get; set; }
             public string PictureUrl { get; set; }
             public int VotesCount { get; set; }
             public double VotesPercentage { get; set; }
+        }
+        public PollResults()
+        {
+            Name = string.Empty;
+            Results = Array.Empty<OptionResult>();
         }
         public int PollId { get; set; }
         public string Name { get; set; }

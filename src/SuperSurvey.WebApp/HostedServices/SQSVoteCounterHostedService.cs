@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 namespace SuperSurvey.WebApp.HostedServices;
 public class SQSVoteCounterHostedService : IHostedService, IDisposable
 {
-    private readonly CancellationTokenSource _stoppingCts = new CancellationTokenSource();
     private readonly SQSVoteCounterHandler _handler;
     private readonly ILogger<SQSVoteCounterHostedService> _logger;
-    private Timer _timer;
+    private Task _task;
+    private volatile bool _executing = false;
+    private volatile int _noMessagesCount = 0;
 
     public SQSVoteCounterHostedService(ILogger<SQSVoteCounterHostedService> logger,
         IAmazonSQS client,
@@ -24,37 +25,55 @@ public class SQSVoteCounterHostedService : IHostedService, IDisposable
         _handler = new SQSVoteCounterHandler(client, countVotesUseCase, configuration.GetConnectionString("VoteQueue"));
     }
 
-    public void Dispose()
-    {
-        _timer?.Dispose();
-    }
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Timed Hosted Service running.");
+        _executing = true;
+        _task = Task.Factory.StartNew(async () => await Execute(), cancellationToken);
+        return Task.CompletedTask;
+    }
 
-        _timer = new Timer(async (state) =>
+    private async Task Execute()
+    {
+        while (_executing)
         {
+            int messagesProcessedCount = 0;
             try
             {
-                int messagesProcessed = await _handler.Execute();
-                _logger.LogInformation($"Checked for new items: { messagesProcessed } processed.");
+                messagesProcessedCount = await _handler.Execute();
+                _logger.LogInformation($"Checked for new items: { messagesProcessedCount } processed.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
             }
-        }, null, TimeSpan.Zero, TimeSpan.FromSeconds(15));
+            int waitDelay = GetNextWaitDelay(messagesProcessedCount);
+            await Task.Delay(waitDelay);
+        }
+    }
 
-        return Task.CompletedTask;
+    private int GetNextWaitDelay(int lastMessagesProcessedCount)
+    {
+        if (lastMessagesProcessedCount == 0)
+        {
+            _noMessagesCount = Math.Max(7, ++_noMessagesCount);
+        }
+        else
+        {
+            _noMessagesCount = 0;
+        }
+        return 1000 * (2 ^ _noMessagesCount) + Random.Shared.Next(0, 1000); // 129 seconds is the limit
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Timed Hosted Service is stopping.");
-
-        _timer?.Change(Timeout.Infinite, 0);
-
+        _executing = false;
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _executing = false;
     }
 }

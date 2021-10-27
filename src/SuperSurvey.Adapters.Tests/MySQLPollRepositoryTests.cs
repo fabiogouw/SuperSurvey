@@ -48,21 +48,19 @@ namespace SuperSurvey.Adapters.Tests
               })
               ;
 
-            await using (var testcontainer = testcontainersBuilder.Build())
-            {
-                await testcontainer.StartAsync();
-                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
-                await ExecuteScript(testcontainer, @"
+            await using var testcontainer = testcontainersBuilder.Build();
+            await testcontainer.StartAsync();
+            await testcontainer.ExecScriptAsync(CREATE_TABLE_SCRIPT);
+            await testcontainer.ExecScriptAsync(@"
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (1, 'ABC', '2021-08-21T14:56', '2021-08-23T09:03');
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (2, 'ABC', '2021-08-23T14:56', '2021-08-23T09:03');
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (3, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');"
-                );
+            );
 
-                var sut = new MySQLPollRepository(testcontainer.ConnectionString);
-                var polls = await sut.GetAllActive(DateTime.Parse("2021-08-23T09:03"));
+            var sut = new MySQLPollRepository(testcontainer.ConnectionString);
+            var polls = await sut.GetAllActive(DateTime.Parse("2021-08-23T09:03"));
 
-                polls.Count.Should().Be(2);
-            }
+            polls.Count.Should().Be(2);
         }
 
         [Fact]
@@ -78,23 +76,21 @@ namespace SuperSurvey.Adapters.Tests
               })
               ;
 
-            await using (var testcontainer = testcontainersBuilder.Build())
-            {
-                await testcontainer.StartAsync();
-                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
-                await ExecuteScript(testcontainer,
-                    "INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (123, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');"
-                    );
+            await using var testcontainer = testcontainersBuilder.Build();
+            await testcontainer.StartAsync();
+            await testcontainer.ExecScriptAsync(CREATE_TABLE_SCRIPT);
+            await testcontainer.ExecScriptAsync(
+                "INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (123, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');"
+                );
 
-                var sut = new MySQLPollRepository(testcontainer.ConnectionString);
-                var poll = await sut.GetById(123);
+            var sut = new MySQLPollRepository(testcontainer.ConnectionString);
+            var poll = await sut.GetById(123);
 
-                poll.Should().NotBeNull();
-                poll.Id.Should().Be(123);
-                poll.Name.Should().Be("ABC");
-                poll.ExpiresAt.Should().Be(DateTime.Parse("2021-08-25T14:56"));
-                poll.UpdatedAt.Should().Be(DateTime.Parse("2021-08-23T09:03"));
-            }
+            poll.Should().NotBeNull();
+            poll.Id.Should().Be(123);
+            poll.Name.Should().Be("ABC");
+            poll.ExpiresAt.Should().Be(DateTime.Parse("2021-08-25T14:56"));
+            poll.UpdatedAt.Should().Be(DateTime.Parse("2021-08-23T09:03"));
         }
 
         [Fact]
@@ -110,56 +106,47 @@ namespace SuperSurvey.Adapters.Tests
               })
               ;
 
-            await using (var testcontainer = testcontainersBuilder.Build())
-            {
-                await testcontainer.StartAsync();
-                await ExecuteScript(testcontainer, CREATE_TABLE_SCRIPT);
-                await ExecuteScript(testcontainer, @"
+            await using var testcontainer = testcontainersBuilder.Build();
+            await testcontainer.StartAsync();
+            await testcontainer.ExecScriptAsync(CREATE_TABLE_SCRIPT);
+            await testcontainer.ExecScriptAsync(@"
                 INSERT INTO Polls (Id, Name, ExpiresAt, UpdatedAt) VALUES (123, 'ABC', '2021-08-25T14:56', '2021-08-23T09:03');
                 INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (1, 123, 'ABC Option 1', NULL, 10, '2021-08-23T09:03');
                 INSERT INTO Options (Id, PollId, Description, PictureUrl, VoteCount, UpdatedAt) VALUES (2, 123, 'ABC Option 2', 'http://someurl', 13, '2021-08-23T09:03');
                 ");
 
-                var poll = new Poll.Builder()
-                    .WithId(123)
-                    .WithName("New ABC")
-                    .WithExpiresAt(DateTime.Parse("2021-08-25T14:56"))
+            var poll = new Poll.Builder()
+                .WithId(123)
+                .WithName("New ABC")
+                .WithExpiresAt(DateTime.Parse("2021-08-25T14:56"))
+                .WithUpdatedAt(DateTime.Parse("2021-08-23T09:03"))
+                .WithOption(new Option.Builder()
+                    .WithId(2)
+                    .WithDescription("New ABC Option 2")
+                    .WithPictureUrl("http://newurl")
+                    .WithVoteCount(20)
                     .WithUpdatedAt(DateTime.Parse("2021-08-23T09:03"))
-                    .WithOption(new Option.Builder()
-                        .WithId(2)
-                        .WithDescription("New ABC Option 2")
-                        .WithPictureUrl("http://newurl")
-                        .WithVoteCount(20)
-                        .WithUpdatedAt(DateTime.Parse("2021-08-23T09:03"))
-                        .Build())
-                    .WithOption(new Option.Builder()
-                        .WithId(3)
-                        .WithDescription("New ABC Option 3")
-                        .WithVoteCount(10)
-                        .WithUpdatedAt(DateTime.Parse("2021-08-23T09:03"))
-                        .Build())
-                    .Build();
+                    .Build())
+                .WithOption(new Option.Builder()
+                    .WithId(3)
+                    .WithDescription("New ABC Option 3")
+                    .WithVoteCount(10)
+                    .WithUpdatedAt(DateTime.Parse("2021-08-23T09:03"))
+                    .Build())
+                .Build();
 
-                var sut = new MySQLPollRepository(testcontainer.ConnectionString);
+            var sut = new MySQLPollRepository(testcontainer.ConnectionString);
 
-                poll = await sut.Save(poll);
+            poll = await sut.Save(poll);
 
-                poll.Should().NotBeNull();
-                poll.Id.Should().Be(123);
-                poll.Name.Should().Be("New ABC");
-                poll.UpdatedAt.Should().NotBe(DateTime.Parse("2021-08-23T09:03"));
-                poll.Options.Count.Should().Be(2);
-                var option = poll.Options.Single(o => o.Id == 2);
-                option.Description.Should().Be("New ABC Option 2");
-                option.PictureUrl.Should().Be("http://newurl");
-            }
-        }
-
-        private async Task ExecuteScript(MySqlTestcontainer testcontainer, string scriptContent)
-        {
-            string fileName = Guid.NewGuid().ToString();
-            await testcontainer.CopyFileAsync($"{ fileName }.sql", Encoding.ASCII.GetBytes(scriptContent));
-            await testcontainer.ExecAsync(new[] { "/bin/sh", "-c", $"mysql -udavidbowie -psecret db < /{ fileName }.sql", "" });
+            poll.Should().NotBeNull();
+            poll.Id.Should().Be(123);
+            poll.Name.Should().Be("New ABC");
+            poll.UpdatedAt.Should().NotBe(DateTime.Parse("2021-08-23T09:03"));
+            poll.Options.Count.Should().Be(2);
+            var option = poll.Options.Single(o => o.Id == 2);
+            option.Description.Should().Be("New ABC Option 2");
+            option.PictureUrl.Should().Be("http://newurl");
         }
     }
 }

@@ -37,20 +37,25 @@ public class SQSVoteCounterHandler
 
         await _countVotesUseCase.CountVotes(voteCommands);
 
-        var deleteBatch = new DeleteMessageBatchRequest 
+        if (response.Messages.Count > 0)
         {
-            QueueUrl = _queueUrl 
-        };
-        foreach (var message in response.Messages)
-        {
-            deleteBatch.Entries.Add(new DeleteMessageBatchRequestEntry(message.MessageId, message.ReceiptHandle));
+            var deleteBatch = new DeleteMessageBatchRequest
+            {
+                QueueUrl = _queueUrl
+            };
+            foreach (var message in response.Messages)
+            {
+                deleteBatch.Entries.Add(new DeleteMessageBatchRequestEntry(message.MessageId, message.ReceiptHandle));
+            }
+            await _client.DeleteMessageBatchAsync(deleteBatch);
+            return response.Messages.Count;
         }
-        await _client.DeleteMessageBatchAsync(deleteBatch);
-        return response.Messages.Count;
+        return 0;
     }
 
-    private VoteCommand ParseVote(Message message)
+    private static VoteCommand ParseVote(Message message)
     {
-        return JsonSerializer.Deserialize<VoteCommand>(message.Body);
+        var obj = JsonSerializer.Deserialize<VoteCommand>(message.Body);
+        return obj ?? VoteCommand.Empty;
     }
 }

@@ -4,13 +4,15 @@
     <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>989101bc-2857-49c8-a748-c2517ce246bd</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileTag>supersurvey</DockerfileTag>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.1.4" />
-    <PackageReference Include="bootstrap" Version="5.1.0" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.1.30" />
+    <PackageReference Include="bootstrap" Version="5.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.HealthChecks" Version="2.2.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0-preview.7.21413.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0-rc.2.21511.1" />
   </ItemGroup>
 
   <ItemGroup>
