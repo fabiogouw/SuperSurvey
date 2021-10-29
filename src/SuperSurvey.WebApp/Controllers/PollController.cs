@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry;
 using SuperSurvey.UseCases.Ports.In;
 using System;
+using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 
 namespace SuperSurvey.WebApp.Controllers;
@@ -12,6 +14,8 @@ public class PollController : Controller
     private readonly ViewResultsUseCase _viewResultsUseCase;
     private readonly CastVoteUseCase _castVoteUseCase;
     private readonly ILogger<PollController> _logger;
+    private static readonly Meter _meter = new("SuperSurveyMeter", "0.0.1");
+    private static readonly Counter<long> _votesCounter = _meter.CreateCounter<long>("Votes");
 
     public PollController(ManagePollsUseCase managePollsUseCase,
         CastVoteUseCase castVoteUseCase,
@@ -60,6 +64,7 @@ public class PollController : Controller
     {
         try
         {
+            _votesCounter.Add(1);
             int voteId = int.Parse(collection["VoteId"]);
             await _castVoteUseCase.CastVote(new VoteCommand()
             {

@@ -25,31 +25,29 @@ namespace SuperSurvey.Adapters.Tests
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(4566))
                 ;
 
-            await using (var testcontainer = testcontainersBuilder.Build())
+            await using var testcontainer = testcontainersBuilder.Build();
+            string queueName = "my-queue";
+            await testcontainer.StartAsync();
+            var client = new AmazonSQSClient("anything", "anything", new AmazonSQSConfig()
             {
-                string queueName = "my-queue";
-                await testcontainer.StartAsync();
-                var client = new AmazonSQSClient("anything", "anything", new AmazonSQSConfig()
-                {
-                    ServiceURL = $"http://localhost:{ randomPort }"
-                });
-                var queue = await client.CreateQueueAsync(queueName);
-                var sut = new SQSVoteRepository(client, queue.QueueUrl);
+                ServiceURL = $"http://localhost:{ randomPort }"
+            });
+            var queue = await client.CreateQueueAsync(queueName);
+            var sut = new SQSVoteRepository(client, queue.QueueUrl);
 
-                var voteCommand = new VoteCommand()
-                {
-                    PollId = 1,
-                    SelectedOption = 999,
-                    UserId = 2,
-                    CreatedAt = DateTime.Now
-                };
-                await sut.Save(voteCommand);
-                
-                var result = await client.ReceiveMessageAsync(queue.QueueUrl);
-                result.Messages.Count.Should().Be(1);
-                var message = result.Messages[0];
-                message.Body.Should().Be(JsonSerializer.Serialize(voteCommand));
-            }
+            var voteCommand = new VoteCommand()
+            {
+                PollId = 1,
+                SelectedOption = 999,
+                UserId = 2,
+                CreatedAt = DateTime.Now
+            };
+            await sut.Save(voteCommand);
+
+            var result = await client.ReceiveMessageAsync(queue.QueueUrl);
+            result.Messages.Count.Should().Be(1);
+            var message = result.Messages[0];
+            message.Body.Should().Be(JsonSerializer.Serialize(voteCommand));
         }
     }
 }

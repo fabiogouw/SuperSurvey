@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using SuperSurvey.UseCases.Ports.In;
 using System;
+using System.Diagnostics.Metrics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,10 @@ public class SQSVoteCounterHostedService : IHostedService, IDisposable
     private Task _task;
     private volatile bool _executing = false;
     private volatile int _noMessagesCount = 0;
+    private static readonly Meter _meter = new ("SuperSurveyMeter", "0.0.1");
+    private static readonly Counter<long> _processedMessagesCounter = _meter.CreateCounter<long>("Processed Messages");
+    private static readonly Counter<long> _executionsWithErros = _meter.CreateCounter<long>("Executions with errors");
+    private static readonly Counter<long> _executionsWithNoErrors = _meter.CreateCounter<long>("Executions with no errors");
 
     public SQSVoteCounterHostedService(ILogger<SQSVoteCounterHostedService> logger,
         IAmazonSQS client,
@@ -41,11 +46,14 @@ public class SQSVoteCounterHostedService : IHostedService, IDisposable
             try
             {
                 messagesProcessedCount = await _handler.Execute();
+                _executionsWithNoErrors.Add(1);
+                _processedMessagesCounter.Add(messagesProcessedCount);
                 _logger.LogInformation($"Checked for new items: { messagesProcessedCount } processed.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.ToString());
+                _executionsWithErros.Add(1);
             }
             int waitDelay = GetNextWaitDelay(messagesProcessedCount);
             await Task.Delay(waitDelay);
@@ -75,5 +83,6 @@ public class SQSVoteCounterHostedService : IHostedService, IDisposable
     public void Dispose()
     {
         _executing = false;
+        GC.SuppressFinalize(this);
     }
 }

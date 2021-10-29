@@ -15,6 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 
 namespace SuperSurvey.WebApp
 {
@@ -35,10 +38,11 @@ namespace SuperSurvey.WebApp
         {
             if (_currentEnv.IsDevelopment())
             {
-                services.AddTransient<IAmazonSQS>(_ => new AmazonSQSClient("test", "test", new AmazonSQSConfig()
+                var client = new AmazonSQSClient("test", "test", new AmazonSQSConfig()
                 {
                     ServiceURL = Configuration.GetConnectionString("AWSServiceURL")
-                }));
+                });
+                services.AddTransient<IAmazonSQS>(_ => client);
                 services.AddTransient<PollRepository>(_ => new MySQLPollRepository(Configuration.GetConnectionString("PollDb")));
             }
             else
@@ -60,6 +64,17 @@ namespace SuperSurvey.WebApp
                 new SQSVoteRepository(svcProvider.GetRequiredService<IAmazonSQS>(), Configuration.GetConnectionString("VoteQueue")));
             services.AddHostedService<SQSVoteCounterHostedService>();
             services.AddHealthChecks();
+
+            services.AddOpenTelemetryMetrics(builder =>
+            {
+                builder.AddMeter("SuperSurveyMeter")
+                    .AddPrometheusExporter();
+            });
+
+            /*services.AddOpenTelemetryTracing(builder =>
+            {
+                builder.AddAspNetCoreInstrumentation();
+            });*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,6 +94,8 @@ namespace SuperSurvey.WebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
             app.UseAuthorization();
 
