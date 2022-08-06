@@ -5,7 +5,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SuperSurvey.WebApp.HostedServices;
+namespace SuperSurvey.Adapters;
+
 public class SQSVoteCounterHandler
 {
     private readonly IAmazonSQS _client;

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using SuperSurvey.Adapters;
 using SuperSurvey.UseCases.Ports.In;
 using System;
 using System.Diagnostics.Metrics;

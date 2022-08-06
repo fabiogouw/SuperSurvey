@@ -5,7 +5,6 @@ using FluentAssertions;
 using Xunit;
 using Moq;
 using SuperSurvey.UseCases.Ports.In;
-using SuperSurvey.WebApp.HostedServices;
 using System.Threading.Tasks;
 using System;
 
