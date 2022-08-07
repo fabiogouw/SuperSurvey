@@ -1,3 +1,4 @@
+using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.Loader;
 using ArchUnitNET.xUnit;
@@ -16,21 +17,27 @@ namespace SuperSurvey.Architecture.Tests
         private static readonly ArchUnitNET.Domain.Architecture _architecture =
             new ArchLoader().LoadAssemblies(_domainAssembly, _useCaseAssembly, _adaptersAssembly, _webAppAssembly).Build();
 
+        private readonly IObjectProvider<IType> _commonTypes = Types().That().ResideInNamespace("^System", true).As("Common Types");
+        private readonly IObjectProvider<IType> _domainLayer = Types().That().ResideInNamespace("^SuperSurvey.Domain", true).As("Domain Layer");
+        private readonly IObjectProvider<IType> _useCaseLayer = Types().That().ResideInNamespace("^SuperSurvey.UseCases", true).As("Use Case Layer");
+        private readonly IObjectProvider<IType> _adapterLayer = Types().That().ResideInNamespace("^SuperSurvey.Adapter", true).As("Adapter Layer");
+        private readonly IObjectProvider<IType> _webAppLayer = Types().That().ResideInNamespace("^SuperSurvey.WebApp", true).As("Framework & Drivers Layer");
+
         [Fact]
         [Trait("Category", "Architecture")]
         public void AllLayers_Should_BelongToTheirOwnAssembly()
         {
             var assemblyRule = 
-                Types().That().ResideInNamespace("^SuperSurvey.Domain", true)
+                Types().That().Are(_domainLayer)
                     .Should().ResideInAssembly(_domainAssembly)
                 .And()
-                    .Types().That().ResideInNamespace("^SuperSurvey.UseCases", true).Should()
+                    .Types().That().Are(_useCaseLayer).Should()
                         .ResideInAssembly(_useCaseAssembly)
                 .And()
-                    .Types().That().ResideInNamespace("^SuperSurvey.Adapters", true).Should()
+                    .Types().That().Are(_adapterLayer).Should()
                         .ResideInAssembly(_adaptersAssembly)
                 .And()
-                    .Types().That().ResideInNamespace("^SuperSurvey.WebApp", true).Should()
+                    .Types().That().Are(_webAppLayer).Should()
                         .ResideInAssembly(_webAppAssembly)
                 .Because("each layer belongs to its own assembly");
             assemblyRule.Check(_architecture);
@@ -42,9 +49,9 @@ namespace SuperSurvey.Architecture.Tests
         {
             var domainReferencesRule =
                 Types().That().ResideInAssembly(_domainAssembly).Should()
-                    .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
-                        .Or().ResideInNamespace("^SuperSurvey.Domain", true))
-                    .Because("domain objects and entities must depend only on the CLR types and their own namespace types");
+                    .OnlyDependOn(Types().That().Are(_commonTypes)
+                        .Or().Are(_domainLayer))
+                    .Because("domain objects and entities must depend only on the common types and their own namespace types");
             domainReferencesRule.Check(_architecture);
         }
 
@@ -54,10 +61,10 @@ namespace SuperSurvey.Architecture.Tests
         {
             var useCaseReferencesRule =
                 Types().That().ResideInAssembly(_useCaseAssembly).Should()
-                    .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
-                        .Or().ResideInNamespace("^SuperSurvey.Domain", true)
-                        .Or().ResideInNamespace("^SuperSurvey.UseCases", true))
-                    .Because("use cases types must depend only on the CLR types, their own namespace types and domain types");
+                    .OnlyDependOn(Types().That().Are(_commonTypes)
+                        .Or().Are(_domainLayer)
+                        .Or().Are(_useCaseLayer))
+                    .Because("use cases types must depend only on the common types, their own namespace types and domain types");
             useCaseReferencesRule.Check(_architecture);
         }
 
@@ -67,11 +74,11 @@ namespace SuperSurvey.Architecture.Tests
         {
             var adapterReferencesRule =
                 Types().That().ResideInAssembly(_useCaseAssembly).Should()
-                    .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
-                        .Or().ResideInNamespace("^SuperSurvey.Domain", true)
-                        .Or().ResideInNamespace("^SuperSurvey.UseCases", true)
-                        .Or().ResideInNamespace("^SuperSurvey.Adapter", true))
-                    .Because("adapters must depend only on the CLR types, their own namespace types and domain and use cases types");
+                    .OnlyDependOn(Types().That().Are(_commonTypes)
+                        .Or().Are(_domainLayer)
+                        .Or().Are(_useCaseLayer)
+                        .Or().Are(_adapterLayer))
+                    .Because("adapters must depend only on the common types, their own namespace types and domain and use cases types");
             adapterReferencesRule.Check(_architecture);
         }
 
