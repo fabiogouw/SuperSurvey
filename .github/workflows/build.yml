@@ -24,6 +24,8 @@ jobs:
       run: dotnet build ./src/SuperSurvey.sln --no-restore
     - name: Unit Tests
       run: dotnet test ./src/SuperSurvey.sln --no-build --verbosity normal --filter Category=Unit
+    - name: Architecture Tests
+      run: dotnet test ./src/SuperSurvey.sln --no-build --verbosity normal --filter Category=Architecture
     - name: Pull docker images
       run: |
         docker pull localstack/localstack:latest
