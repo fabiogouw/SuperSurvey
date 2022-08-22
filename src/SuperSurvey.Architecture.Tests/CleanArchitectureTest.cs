@@ -21,7 +21,7 @@ namespace SuperSurvey.Architecture.Tests
         [Trait("Category", "Architecture")]
         public void AllLayers_Should_BelongToTheirOwnAssembly()
         {
-            var assemblyRule = 
+            IArchRule assemblyRule = 
                 Types().That().ResideInNamespace("^SuperSurvey.Domain", true)
                     .Should().ResideInAssembly(_domainAssembly)
                 .And()
@@ -41,11 +41,11 @@ namespace SuperSurvey.Architecture.Tests
         [Trait("Category", "Architecture")]
         public void DomainLayerTypes_Should_DependOnlyOnCLRTypesAndOwnNamespaces()
         {
-            var domainReferencesRule =
+            IArchRule domainReferencesRule =
                 Types().That().ResideInAssembly(_domainAssembly).Should()
                     .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
                         .Or().ResideInNamespace("^SuperSurvey.Domain", true))
-                    .Because("domain objects and entities must depend only on the common types and their own namespace types");
+                    .Because("domain objects and entities must not depend on external types");
             domainReferencesRule.Check(_architecture);
         }
 
@@ -53,12 +53,12 @@ namespace SuperSurvey.Architecture.Tests
         [Trait("Category", "Architecture")]
         public void UseCaseLayerTypes_Should_DependOnlyOnCLRTypesAndOwnNamespacesAndDomainLayer()
         {
-            var useCaseReferencesRule =
+            IArchRule useCaseReferencesRule =
                 Types().That().ResideInAssembly(_useCaseAssembly).Should()
                     .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
                         .Or().ResideInNamespace("^SuperSurvey.Domain", true)
                         .Or().ResideInNamespace("^SuperSurvey.UseCases", true))
-                    .Because("use cases types must depend only on the common types, their own namespace types and domain types");
+                    .Because("use cases types must not depend on external types");
             useCaseReferencesRule.Check(_architecture);
         }
 
@@ -66,13 +66,13 @@ namespace SuperSurvey.Architecture.Tests
         [Trait("Category", "Architecture")]
         public void AdapterLayerTypes_Should_DependOnlyOnCLRTypesAndOwnNamespacesAndDomainLayerAndUseCaseLayer()
         {
-            var adapterReferencesRule =
+            IArchRule adapterReferencesRule =
                 Types().That().ResideInAssembly(_useCaseAssembly).Should()
                     .OnlyDependOn(Types().That().ResideInNamespace("^System", true)
                         .Or().ResideInNamespace("^SuperSurvey.Domain", true)
                         .Or().ResideInNamespace("^SuperSurvey.UseCases", true)
                         .Or().ResideInNamespace("^SuperSurvey.Adapter", true))
-                    .Because("adapters must depend only on the common types, their own namespace types and domain and use cases types");
+                    .Because("adapters must not depend on external types");
             adapterReferencesRule.Check(_architecture);
         }
 
@@ -83,7 +83,7 @@ namespace SuperSurvey.Architecture.Tests
             IArchRule useCasesClassesInUseCaseNamespace =
                 Classes().That().HaveNameContaining("UseCase")
                     .Should().ResideInAssembly(_useCaseAssembly)
-                    .Because("UseCase implementations should belong to the SuperSurvey.UseCases project");
+                    .Because("UseCase implementations should belong to the SuperSurvey.UseCases layer");
             useCasesClassesInUseCaseNamespace.Check(_architecture);
         }
     }
